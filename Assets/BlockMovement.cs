@@ -17,10 +17,12 @@ public class BlockMovement : MonoBehaviour
 
     [SerializeField] Vector3 rotationPoint;
 
+    Spawner spawner;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        spawner = FindObjectOfType<Spawner>();
     }
 
     // Update is called once per frame
@@ -65,6 +67,11 @@ public class BlockMovement : MonoBehaviour
             if (canMove(0, -1))
             {
                 transform.position += new Vector3(0, -1, 0);
+            }
+            else
+            {
+                this.enabled = false;
+                spawner.Spawn();
             }
             prevTime = Time.time;
         }
