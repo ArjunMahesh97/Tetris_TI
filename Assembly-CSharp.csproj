@@ -57,6 +57,8 @@
   <ItemGroup>
      <Compile Include="Assets\Spawner.cs" />
      <Compile Include="Assets\BlockMovement.cs" />
+     <Compile Include="Assets\RestartGame.cs" />
+     <Compile Include="Assets\ScoreManager.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>D:/CODING/GameDev/projects/Tetris_TI/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>

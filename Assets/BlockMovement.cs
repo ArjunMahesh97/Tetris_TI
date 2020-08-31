@@ -17,6 +17,7 @@ public class BlockMovement : MonoBehaviour
     [SerializeField] Vector3 rotationPoint;
 
     Spawner spawner;
+    ScoreManager scoreManager;
 
     static Transform[,] stopPositions = new Transform[w, h];
 
@@ -24,6 +25,7 @@ public class BlockMovement : MonoBehaviour
     void Start()
     {
         spawner = FindObjectOfType<Spawner>();
+        scoreManager = FindObjectOfType<ScoreManager>();
     }
 
     // Update is called once per frame
@@ -72,6 +74,8 @@ public class BlockMovement : MonoBehaviour
             else
             {
                 updateStopPos();
+                LineCheck();
+
                 this.enabled = false;
                 spawner.Spawn();
             }
@@ -143,4 +147,55 @@ public class BlockMovement : MonoBehaviour
             stopPositions[roundX, roundY] = child;
         }
     }
+
+    void LineCheck()
+    {
+        for(int i = h - 1; i >= 0; i--)
+        {
+            if (IsLine(i))
+            {
+                DeleteLine(i);
+                RowMove(i);
+                scoreManager.ScoreAdd();
+            }
+        }
+    }
+
+    bool IsLine(int i)
+    {
+        for(int j = 0; j < w; j++)
+        {
+            if (stopPositions[j, i] == null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void DeleteLine(int i)
+    {
+        for(int j = 0; j < w; j++)
+        {
+            Destroy(stopPositions[j, i].gameObject);
+            stopPositions[j, i] = null;
+        }
+    }
+
+    void RowMove(int i)
+    {
+        for(int y = i; y < h; y++)
+        {
+            for(int j = 0; j < w; j++)
+            {
+                if (stopPositions[j, y] != null)
+                {
+                    stopPositions[j, y - 1] = stopPositions[j, y];
+                    stopPositions[j, y] = null;
+                    stopPositions[j, y - 1].transform.position -= new Vector3(0, 1, 0);
+                }
+            }
+        }
+    }
+
 }
