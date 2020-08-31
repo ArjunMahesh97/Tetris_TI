@@ -10,9 +10,12 @@ public class BlockMovement : MonoBehaviour
     
 
     [SerializeField] float downKeySpeedFactor=0.2f;
+    [SerializeField] float rotationAngle = -90f;
 
     [SerializeField] static int w = 10;
     [SerializeField] static int h = 20;
+
+    [SerializeField] Vector3 rotationPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -23,14 +26,14 @@ public class BlockMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (canMove(-1, 0))
             {
                 transform.position += new Vector3(-1, 0, 0);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
             if (canMove(1, 0))
             {
@@ -38,13 +41,23 @@ public class BlockMovement : MonoBehaviour
             }
         }
 
-        if(Input.GetKey(KeyCode.S))
+        if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             fallTimeGapFactor = fallTimeGap * downKeySpeedFactor;
         }
         else
         {
             fallTimeGapFactor = fallTimeGap;
+        }
+
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+        {
+
+            transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), rotationAngle);
+            if (!canRotate()) 
+            { 
+                transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), -rotationAngle); 
+            } 
         }
 
         if(Time.time-prevTime>fallTimeGapFactor)
@@ -78,6 +91,26 @@ public class BlockMovement : MonoBehaviour
             }
         }
 
+        return true;
+    }
+
+    bool canRotate()
+    {
+        foreach (Transform child in transform)
+        {
+            int roundX = Mathf.RoundToInt(child.transform.position.x);
+            int roundY = Mathf.RoundToInt(child.transform.position.y);
+
+            if (roundX < 0 || roundX >= w)
+            {
+                return false;
+            }
+
+            if (roundY < 0 || roundY >= h)
+            {
+                return false;
+            }
+        }
         return true;
     }
 }
