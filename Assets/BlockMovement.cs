@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class BlockMovement : MonoBehaviour
@@ -7,12 +8,13 @@ public class BlockMovement : MonoBehaviour
     float prevTime;
     float fallTimeGapFactor;
 
+    [SerializeField] static int w = 10;
+    [SerializeField] static int h = 20;
+
     [SerializeField] float fallTimeGap = 1f;
     [SerializeField] float downKeySpeedFactor=0.2f;
     [SerializeField] float rotationAngle = -90f;
-
-    [SerializeField] static int w = 10;
-    [SerializeField] static int h = 20;
+    [SerializeField] int lossRow = 16;
 
     [SerializeField] Vector3 rotationPoint;
 
@@ -31,6 +33,7 @@ public class BlockMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (canMove(-1, 0))
@@ -65,7 +68,7 @@ public class BlockMovement : MonoBehaviour
             } 
         }
 
-        if(Time.time-prevTime>fallTimeGapFactor)
+        if(Time.timeSinceLevelLoad-prevTime>fallTimeGapFactor)
         {
             if (canMove(0, -1))
             {
@@ -77,9 +80,17 @@ public class BlockMovement : MonoBehaviour
                 LineCheck();
 
                 this.enabled = false;
-                spawner.Spawn();
+
+                if (!CheckLoss())
+                {
+                    spawner.Spawn();
+                }
+                else
+                {
+                    scoreManager.OpenGameOverScreen();
+                }
             }
-            prevTime = Time.time;
+            prevTime = Time.timeSinceLevelLoad;
         }
     }
 
@@ -196,6 +207,19 @@ public class BlockMovement : MonoBehaviour
                 }
             }
         }
+    }
+
+    bool CheckLoss()
+    {
+        for (int i = 0; i < w; i++)
+        {
+            if (stopPositions[i, lossRow] != null)
+            {
+                Time.timeScale = 0f;
+                return true;
+            }
+        }
+        return false;
     }
 
 }
