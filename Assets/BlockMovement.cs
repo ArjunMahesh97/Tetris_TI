@@ -5,10 +5,9 @@ using UnityEngine;
 public class BlockMovement : MonoBehaviour
 {
     float prevTime;
-    [SerializeField] float fallTimeGap = 1f;
     float fallTimeGapFactor;
-    
 
+    [SerializeField] float fallTimeGap = 1f;
     [SerializeField] float downKeySpeedFactor=0.2f;
     [SerializeField] float rotationAngle = -90f;
 
@@ -18,6 +17,8 @@ public class BlockMovement : MonoBehaviour
     [SerializeField] Vector3 rotationPoint;
 
     Spawner spawner;
+
+    static Transform[,] stopPositions = new Transform[w, h];
 
     // Start is called before the first frame update
     void Start()
@@ -70,6 +71,7 @@ public class BlockMovement : MonoBehaviour
             }
             else
             {
+                updateStopPos();
                 this.enabled = false;
                 spawner.Spawn();
             }
@@ -96,6 +98,11 @@ public class BlockMovement : MonoBehaviour
             {
                 return false;
             }
+
+            if (stopPositions[xNextMove, yNextMove] != null)
+            {
+                return false;
+            }
         }
 
         return true;
@@ -117,7 +124,23 @@ public class BlockMovement : MonoBehaviour
             {
                 return false;
             }
+
+            if (stopPositions[roundX, roundY] != null)
+            {
+                return false;
+            }
         }
         return true;
+    }
+
+    void updateStopPos()
+    {
+        foreach (Transform child in transform)
+        {
+            int roundX = Mathf.RoundToInt(child.transform.position.x);
+            int roundY = Mathf.RoundToInt(child.transform.position.y);
+
+            stopPositions[roundX, roundY] = child;
+        }
     }
 }
