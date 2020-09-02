@@ -31,10 +31,16 @@ public class BlockMovement : MonoBehaviour
         scoreManager = FindObjectOfType<ScoreManager>();
     }
 
+
     // Update is called once per frame
     void Update()
     {
+        HandleInput();
+        HandleVerticalMovement();
+    }
 
+    private void HandleInput()
+    {
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (canMove(-1, 0))
@@ -50,7 +56,7 @@ public class BlockMovement : MonoBehaviour
             }
         }
 
-        if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             fallTimeGapFactor = fallTimeGap * downKeySpeedFactor;
         }
@@ -63,13 +69,16 @@ public class BlockMovement : MonoBehaviour
         {
 
             transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), rotationAngle);
-            if (!canRotate()) 
-            { 
-                transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), -rotationAngle); 
-            } 
+            if (!canRotate())
+            {
+                transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), -rotationAngle);
+            }
         }
+    }
 
-        if(Time.timeSinceLevelLoad-prevTime>fallTimeGapFactor)
+    private void HandleVerticalMovement()
+    {
+        if (Time.timeSinceLevelLoad - prevTime > fallTimeGapFactor)
         {
             if (canMove(0, -1))
             {
@@ -95,6 +104,7 @@ public class BlockMovement : MonoBehaviour
             prevTime = Time.timeSinceLevelLoad;
         }
     }
+
 
     bool canMove(int xMove, int yMove)
     {
@@ -223,5 +233,4 @@ public class BlockMovement : MonoBehaviour
         }
         return false;
     }
-
 }
