@@ -9,20 +9,20 @@ public class BlockMovement : MonoBehaviour
     float prevTime;
     float fallTimeGapFactor;
 
-    [SerializeField] static int w = 10;
-    [SerializeField] static int h = 20;
+    [SerializeField] static int width = 10;
+    [SerializeField] static int height = 20;
 
     [SerializeField] float fallTimeGap = 1f;
     [SerializeField] float downKeySpeedFactor=0.2f;
     [SerializeField] float rotationAngle = -90f;
-    [SerializeField] int lossRow = 16;
+    [SerializeField] int lossRow = 16;  //row number at which loss is triggered
 
-    [SerializeField] Vector3 rotationPoint;
+    [SerializeField] Vector3 rotationPoint; //set manually for different types of tetromino
 
     Spawner spawner;
     ScoreManager scoreManager;
 
-    static Transform[,] stopPositions = new Transform[w, h];
+    static Transform[,] stopPositions = new Transform[width, height];  //grid positions for blocks after dropping
 
     // Start is called before the first frame update
     void Start()
@@ -58,7 +58,7 @@ public class BlockMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
-            fallTimeGapFactor = fallTimeGap * downKeySpeedFactor;
+            fallTimeGapFactor = fallTimeGap * downKeySpeedFactor;  //speed up fall
         }
         else
         {
@@ -71,7 +71,7 @@ public class BlockMovement : MonoBehaviour
             transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), rotationAngle);
             if (!canRotate())
             {
-                transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), -rotationAngle);
+                transform.RotateAround(transform.TransformPoint(rotationPoint), new Vector3(0, 0, 1), -rotationAngle);  //to prevent rotation outside bounds
             }
         }
     }
@@ -106,7 +106,7 @@ public class BlockMovement : MonoBehaviour
     }
 
 
-    bool canMove(int xMove, int yMove)
+    bool canMove(int xMove, int yMove) //checks if next move is possible
     {
         foreach (Transform child in transform)
         {
@@ -116,17 +116,17 @@ public class BlockMovement : MonoBehaviour
             int xNextMove = roundX + xMove;
             int yNextMove = roundY + yMove;
 
-            if (xNextMove < 0 || xNextMove >= w)
+            if (xNextMove < 0 || xNextMove >= width)
             {
                 return false;
             }
 
-            if (yNextMove < 0 || yNextMove >= h)
+            if (yNextMove < 0 || yNextMove >= height)
             {
                 return false;
             }
 
-            if (stopPositions[xNextMove, yNextMove] != null)
+            if (stopPositions[xNextMove, yNextMove] != null) //checks for blocks that have already been dropped
             {
                 return false;
             }
@@ -135,24 +135,24 @@ public class BlockMovement : MonoBehaviour
         return true;
     }
 
-    bool canRotate()
+    bool canRotate()  //checks if current rotation is possible
     {
         foreach (Transform child in transform)
         {
             int roundX = Mathf.RoundToInt(child.transform.position.x);
             int roundY = Mathf.RoundToInt(child.transform.position.y);
 
-            if (roundX < 0 || roundX >= w)
+            if (roundX < 0 || roundX >= width)
             {
                 return false;
             }
 
-            if (roundY < 0 || roundY >= h)
+            if (roundY < 0 || roundY >= height)
             {
                 return false;
             }
 
-            if (stopPositions[roundX, roundY] != null)
+            if (stopPositions[roundX, roundY] != null)  //checks for blocks that have already been dropped
             {
                 return false;
             }
@@ -160,7 +160,7 @@ public class BlockMovement : MonoBehaviour
         return true;
     }
 
-    void updateStopPos()
+    void updateStopPos() //updates grid of stopped positions
     {
         foreach (Transform child in transform)
         {
@@ -171,9 +171,9 @@ public class BlockMovement : MonoBehaviour
         }
     }
 
-    void LineCheck()
+    void LineCheck()  //checks for horizontal complete lines
     {
-        for(int i = h - 1; i >= 0; i--)
+        for(int i = height - 1; i >= 0; i--)
         {
             if (IsLine(i))
             {
@@ -186,7 +186,7 @@ public class BlockMovement : MonoBehaviour
 
     bool IsLine(int i)
     {
-        for(int j = 0; j < w; j++)
+        for(int j = 0; j < width; j++)
         {
             if (stopPositions[j, i] == null)
             {
@@ -198,18 +198,18 @@ public class BlockMovement : MonoBehaviour
 
     void DeleteLine(int i)
     {
-        for(int j = 0; j < w; j++)
+        for(int j = 0; j < width; j++)
         {
             Destroy(stopPositions[j, i].gameObject);
             stopPositions[j, i] = null;
         }
     }
 
-    void RowMove(int i)
+    void RowMove(int i) //moves all blocks below after line has been deleted
     {
-        for(int y = i; y < h; y++)
+        for(int y = i; y < height; y++)
         {
-            for(int j = 0; j < w; j++)
+            for(int j = 0; j < width; j++)
             {
                 if (stopPositions[j, y] != null)
                 {
@@ -223,7 +223,7 @@ public class BlockMovement : MonoBehaviour
 
     bool CheckLoss()
     {
-        for (int i = 0; i < w; i++)
+        for (int i = 0; i < width; i++)
         {
             if (stopPositions[i, lossRow] != null)
             {
