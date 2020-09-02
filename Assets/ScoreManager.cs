@@ -8,8 +8,6 @@ public class ScoreManager : MonoBehaviour
     static int score = 0;
     [SerializeField] int scorePerLine = 10;
 
-    [SerializeField] GameObject gameOverUI;
-
     Text scoreText;
 
     // Start is called before the first frame update
@@ -28,9 +26,5 @@ public class ScoreManager : MonoBehaviour
     public void ScoreAdd()
     {
         score += scorePerLine;
-    }
-    public void OpenGameOverScreen()
-    {
-        gameOverUI.SetActive(true);
     }
 }

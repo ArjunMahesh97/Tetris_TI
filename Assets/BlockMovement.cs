@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BlockMovement : MonoBehaviour
 {
@@ -87,7 +88,8 @@ public class BlockMovement : MonoBehaviour
                 }
                 else
                 {
-                    scoreManager.OpenGameOverScreen();
+                    //stopPositions = new Transform[w, h];
+                    SceneManager.LoadScene("GameOver");
                 }
             }
             prevTime = Time.timeSinceLevelLoad;
@@ -215,7 +217,7 @@ public class BlockMovement : MonoBehaviour
         {
             if (stopPositions[i, lossRow] != null)
             {
-                Time.timeScale = 0f;
+                //Time.timeScale = 0f;
                 return true;
             }
         }
